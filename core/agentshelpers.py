@@ -51,8 +51,10 @@ def viewAgents():
         print(" Name                         Listener                         External IP                         Hostname")
         print("------                       ----------                       -------------                       ----------")
         
+        count = 1;
         for i in agents:
-            print(" {}".format(agents[i].name) + " " * (29 - len(agents[i].name)) + "{}".format(agents[i].listener) + " " * (33 - len(agents[i].listener)) + agents[i].remoteip + " " * (36 - len(agents[i].remoteip)) + agents[i].hostname)
+            print("{}.".format(count) + " {}".format(agents[i].name) + " " * (29 - len(agents[i].name)) + "{}".format(agents[i].listener) + " " * (33 - len(agents[i].listener)) + agents[i].remoteip + " " * (36 - len(agents[i].remoteip)) + agents[i].hostname)
+            count += 1;
         
         print(cRESET)
 
@@ -111,15 +113,34 @@ def getAgentsForListener(name):
     return result
 
 def interactWithAgent(args):
-    
     if len(args) != 1:
         error("Invalid arguments.")
     else:
-        name = args[0]
-        if isValidAgent(name, 1):
-            agents[name].interact()
-        else:
-            pass
+        try:
+            # Convert argument to integer and adjust for zero-based indexing
+            num = int(args[0]) - 1
+            
+            # Convert OrderedDict to a list of items to access by index
+            agent_items = list(agents.items())
+            
+            # Validate the index
+            if num < 0 or num >= len(agent_items):
+                error("Index out of range.")
+                return
+            
+            # Get the agent by index
+            agent_key, agent_object = agent_items[num]
+            
+            # Validate the agent
+            if isValidAgent(agent_object.name, 1):
+                agent_object.interact()
+            else:
+                error("Invalid agent.")
+                
+        except ValueError:
+            error("Invalid input; please enter a numeric index.")
+        except Exception as e:
+            error(f"An error occurred: {e}")
 
 def clearAgentTasks(name):
     if isValidAgent(name, 0):
