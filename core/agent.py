@@ -1,23 +1,21 @@
 import os
-
+import base64
 import time
 
 from shutil import rmtree
 
 from core.common import *
-from core.encryption import *
-
 
 class Agent:
 
-    def __init__(self, name, listener, remoteip, hostname, Type, key):
+    def __init__(self, name, listener, remoteip, hostname, Type, username):
 
         self.name      = name
         self.listener  = listener
         self.remoteip  = remoteip
         self.hostname  = hostname
         self.Type      = Type
-        self.key       = key
+        self.username  = username
         self.sleept    = 3
         self.Path      = "data/listeners/{}/agents/{}/".format(self.listener, self.name)
         self.tasksPath = "{}tasks".format(self.Path, self.name)
@@ -29,8 +27,7 @@ class Agent:
         
         try:
             self.menu = Menu(self.name)
-            self.menu.registerCommand("shell", "Execute a shell command.", "<command>")
-            self.menu.registerCommand("powershell", "Execute a powershell command.", "<command>")
+            self.menu.registerCommand("loadshell", "Local ShellCode Injection via HWBP", "<location of .bin>")
             self.menu.registerCommand("sleep", "Change agent's sleep time.", "<time (s)>")
             self.menu.registerCommand("clear", "Clear tasks.", "")
             self.menu.registerCommand("quit", "Task agent to quit.", "")
@@ -43,13 +40,6 @@ class Agent:
             pass
     
     def writeTask(self, task):
-
-        if self.Type == "p":
-            task = "VALID " + task
-            task = ENCRYPT(task, self.key)
-        elif self.Type == "w":
-            task = task
-
         with open(self.tasksPath, "w") as f:
             f.write(task)
 
@@ -79,24 +69,23 @@ class Agent:
             pass
         
         return 0
-
-    def shell(self, args):
-
-        if len(args) == 0:
-            error("Missing command.")
+    
+    def loadshell(self, args):
+        if len(args) != 1:
+            error("Invalid arguments.")
         else:
-            command = " ".join(args)
-            task    = "shell " + command
-            self.writeTask(task)
+            binfile = args[0]
+            if not os.path.isfile(binfile):
+                error("File does not exist.")
+                return
 
-    def powershell(self, args):
-        
-        if len(args) == 0:
-            error("Missing command.")
-        else:
-            command = " ".join(args)
-            task    = "powershell " + command
-            self.writeTask(task)
+            try:
+                with open(binfile, "rb") as f:
+                    data = f.read()
+                task = "loadshell {}".format(base64.b64encode(data))
+                self.writeTask(task)
+            except Exception as e:
+                error(f"An error occurred while reading the file: {e}")
 
     def sleep(self, args):
 
@@ -151,10 +140,8 @@ class Agent:
             home()
         elif command == "exit":
             Exit()
-        elif command == "shell":
-            self.shell(args)
-        elif command == "powershell":
-            self.powershell(args)
+        elif command == "loadshell":
+            self.loadshell(args)
         elif command == "sleep":
             self.sleep(args)
         elif command == "clear":
@@ -163,17 +150,32 @@ class Agent:
             self.QuitandRemove()
 
     def interact(self):
-
         self.menu.clearScreen()
 
         while True:
-            
             try:
                 command, args = self.menu.parse()
-            except:
+            except Exception as e:
+                print(f"Error parsing command: {e}")
                 continue
-            
+
             if command not in self.Commands:
                 error("Invalid command.")
             else:
-                self.ev(command, args)
+                # Check if the command is 'sleep' and requires a numeric argument
+                if command == "sleep":
+                    if len(args) == 1 and args[0].isdigit():
+                        self.ev(command, args)
+                    else:
+                        error("Invalid argument for sleep. Please provide a numeric value.")
+                
+                # Check if the command is 'loadshell' and requires a string argument
+                elif command == "loadshell":
+                    if len(args) == 1 and not args[0].isdigit():
+                        self.ev(command, args)
+                    else:
+                        error("Invalid argument for loadshell. Please provide a filename.")
+
+                # Handle other commands
+                else:
+                    self.ev(command, args)

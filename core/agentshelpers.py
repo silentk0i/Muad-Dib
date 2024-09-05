@@ -1,5 +1,4 @@
 from core.common import *
-from core.encryption import *
 from core.agent import Agent
 
 from collections import OrderedDict
@@ -47,7 +46,7 @@ def viewAgents():
 
         success("Active Agents:")
         
-        print(YELLOW)
+        print(GREEN)
         print(" Name                         Listener                         External IP                         Hostname")
         print("------                       ----------                       -------------                       ----------")
         
@@ -155,25 +154,8 @@ def displayResults(name, result):
         if result == "":
             success("Agent {} completed task.".format(name))
         else:
-            
-            key = agents[name].key
-            
-            if agents[name].Type == "p":
-
-                try:
-                    plaintext = DECRYPT(result, key)
-                except:
-                    return 0
-            
-                if plaintext[:5] == "VALID":
-                    success("Agent {} returned results:".format(name))
-                    print(plaintext[6:])
-                else:
-                    return 0
-            
-            else:
-                success("Agent {} returned results:".format(name))
-                print(result)
+            success("Agent {} returned results:".format(name))
+            print(result)
                 
 def taskAgentToQuit(name):
     agents[name].Quit()

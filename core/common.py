@@ -1,18 +1,23 @@
+from colorama import init as colorama_init
+from colorama import Fore
+from colorama import Style
 import pickle
 import os
 from collections import OrderedDict
 
-RED     = "\u001b[31m"
-GREEN   = "\u001b[32m"
-YELLOW  = "\u001b[33m"
-cRESET  = "\u001b[0m"
+colorama_init()
+
+RED     = Fore.LIGHTRED_EX
+GREEN   = Fore.LIGHTGREEN_EX
+YELLOW  = Fore.LIGHTYELLOW_EX
+cRESET  = Style.RESET_ALL
 
 listenersDB = "data/databases/listeners.db"
 agentsDB    = "data/databases/agents.db"
 
 def prompt(name):
     
-    prompt = "\n" + GREEN + "(" + name + ")" + RED + "::> " + cRESET
+    prompt = "\n" + YELLOW + "(" + name + ")" + RED + "> " + cRESET
     return prompt
 
 def error(message):
@@ -21,7 +26,7 @@ def error(message):
 
 def success(message):
     
-    print("\n" + GREEN + "[*] " + message + "\n" + cRESET)
+    print("\n" + GREEN + "[+] " + message + "\n" + cRESET)
 
 def progress(message):
     

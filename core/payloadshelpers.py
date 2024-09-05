@@ -55,7 +55,7 @@ def viewPayloads():
 
     success("Available payload types: ")
 
-    print(YELLOW)
+    print(GREEN)
     print(" Type                         Description")
     print("------                       -------------")
     

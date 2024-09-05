@@ -1,6 +1,6 @@
 from core.common import *
 from core.agentshelpers import getAgentsForListener, removeAgent, taskAgentToQuit
-from core.listenerHTTP import ListenerHTTP
+from core.listenerHTTPS import ListenerHTTPS
 
 from collections import OrderedDict
 from shutil import rmtree
@@ -42,7 +42,7 @@ def viewListeners():
         
         success("Active listeners:")
         
-        print(YELLOW)
+        print(GREEN)
         print(" Name                         IP:Port                                  Status")
         print("------                       ------------------                       --------")
         
@@ -103,7 +103,7 @@ def startListener(args):
                 error("Listener {} already exists.".format(name))
             else:
             
-                listeners[name] = ListenerHTTP(name, port, ipaddress)
+                listeners[name] = ListenerHTTPS(name, port, ipaddress)
                 progress("Starting listener {} on {}:{}.".format(name, ipaddress, str(port)))
 
                 try:
@@ -202,7 +202,7 @@ def loadListeners():
             ipaddress = listener[2]
             flag      = listener[3]
 
-            listeners[name] = ListenerHTTP(name, port, ipaddress)
+            listeners[name] = ListenerHTTPS(name, port, ipaddress)
 
             if flag == "1":
                 listeners[name].start()

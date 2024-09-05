@@ -51,7 +51,7 @@ class Menu:
 
         success("Avaliable commands: ")
         
-        print(YELLOW)
+        print(GREEN)
         print(" Command                         Description                         Arguments")
         print("---------                       -------------                       -----------")
 
@@ -224,7 +224,7 @@ def Exit():
 Amenu = Menu("agents")
 Lmenu = Menu("listeners")
 Pmenu = Menu("payloads")
-Hmenu = Menu("c2")
+Hmenu = Menu("home")
 
 Amenu.registerCommand("list", "List active agents.", "")
 Amenu.registerCommand("interact", "Interact with an agent.", "<name>")
