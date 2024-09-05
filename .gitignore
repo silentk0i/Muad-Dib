@@ -2,3 +2,6 @@ __pycache__/
 venv/
 .vscode/
 certs/
+data/
+output/
+calc.bin
