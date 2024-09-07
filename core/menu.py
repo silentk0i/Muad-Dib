@@ -8,28 +8,51 @@ from core.listenershelpers import *
 from core.agentshelpers import *
 from core.payloadshelpers import *
 
+import os
+import glob
+
 class AutoComplete(object):
     
-    def __init__(self, options):
+    def __init__(self, options, complete_paths=False):
         self.options = sorted(options)
+        self.complete_paths = complete_paths  # New flag for file path autocompletion
         return
 
     def complete(self, text, state):
         response = None
-        if state == 0:
 
-            if text:
-                self.matches = [s 
-                                for s in self.options
-                                if s and s.startswith(text)]
-            else:
-                self.matches = self.options[:]
-        
-        try:
-            response = self.matches[state]
-        except IndexError:
-            response = None
+        # If we're completing a file path, use the filesystem
+        if self.complete_paths:
+            if state == 0:
+                if text:
+                    # Expand relative paths and ~ to full paths
+                    text = os.path.expanduser(text)
+                    # If it's a directory, suggest contents; otherwise suggest matching files
+                    self.matches = glob.glob(text + '*')
+                else:
+                    self.matches = glob.glob('*')
+
+            try:
+                response = self.matches[state]
+            except IndexError:
+                response = None
+        else:
+            # Default behavior for command completion
+            if state == 0:
+                if text:
+                    self.matches = [s 
+                                    for s in self.options
+                                    if s and s.startswith(text)]
+                else:
+                    self.matches = self.options[:]
+
+            try:
+                response = self.matches[state]
+            except IndexError:
+                response = None
+
         return response
+
 
 class Menu:
 
@@ -68,7 +91,6 @@ class Menu:
             self.Commands.append(i)
 
     def parse(self):
-        
         readline.set_completer(AutoComplete(self.Commands).complete)
         readline.parse_and_bind('tab: complete')
 
@@ -76,13 +98,25 @@ class Menu:
 
         cmd = cmd.split()
         
+        if len(cmd) == 0:
+            return None, []
+
         command = cmd[0]
         args = []
 
-        for i in range(1,len(cmd)):
+        # Enable file path autocompletion after the first argument for 'loadshell'
+        if command == "loadshell" and len(cmd) > 1:
+            # Switch to file path autocompletion
+            readline.set_completer(AutoComplete([], complete_paths=True).complete)
+        else:
+            readline.set_completer(AutoComplete(self.Commands).complete)
+
+        for i in range(1, len(cmd)):
             args.append(cmd[i])
-        
+
         return command, args
+
+
 
 
 

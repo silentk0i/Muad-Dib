@@ -155,7 +155,7 @@ def displayResults(name, result):
             success("Agent {} completed task.".format(name))
         else:
             success("Agent {} returned results:".format(name))
-            print(result)
+            success(result)
                 
 def taskAgentToQuit(name):
     agents[name].Quit()
