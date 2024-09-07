@@ -7,9 +7,6 @@ from core.menu import *
 
 def main():
 
-	if os.path.exists("./output/") == False:
-		os.mkdir("./output/")
-
 	if os.path.exists("./data/") == False:
 		os.mkdir("./data/")
 
