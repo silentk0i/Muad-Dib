@@ -239,7 +239,6 @@ Lmenu.registerCommand("remove", "Remove a listener.", "<name>")
 
 Hmenu.registerCommand("listeners", "Manage listeners.", "")
 Hmenu.registerCommand("agents", "Manage active agents.", "")
-Hmenu.registerCommand("payloads", "Generate payloads.", "")
 
 Amenu.uCommands()
 Lmenu.uCommands()
