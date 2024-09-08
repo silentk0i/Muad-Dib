@@ -37,23 +37,30 @@ def isValidListener(name, s):
             return False
 
 def viewListeners():
-
-    if checkListenersEmpty(1) == False:
-        
-        success("Active listeners:")
+    if not checkListenersEmpty(1):
+        success("Active Listeners:")
         
         print(GREEN)
-        print(" Name                         IP:Port                                  Status")
-        print("------                       ------------------                       --------")
+        headers = ["Name", "IP:Port", "URL", "Status"]
+        column_widths = [30, 35, 40, 30]
+        separator_widths = [10, 15, 20, 10]
         
-        for i in listeners:
- 
-            if listeners[i].isRunning == True:
-                status = "Running"
-            else:
-                status = "Stopped"
-
-            print(" {}".format(listeners[i].name) + " " * (29 - len(listeners[i].name)) + "{}:{}".format(listeners[i].ipaddress, str(listeners[i].port)) + " " * (41 - (len(str(listeners[i].port)) + len(":{}".format(listeners[i].ipaddress)))) + status)
+        header_line = " ".join(f"{header:^{width}}" for header, width in zip(headers, column_widths))
+        print(header_line)
+        
+        separator = " ".join(f"{'-' * sep_width:^{width}}" for sep_width, width in zip(separator_widths, column_widths))
+        print(separator)
+        
+        for count, (listener_name, listener_obj) in enumerate(listeners.items(), 1):
+            status = "Running" if listener_obj.isRunning else "Stopped"
+            listener_info = [
+                f"{count}. {listener_name}",
+                f"{listener_obj.ipaddress}:{listener_obj.port}",
+                f"https://{listener_obj.ipaddress}:{listener_obj.port}/",
+                status
+            ]
+            listener_line = " ".join(f"{info:^{width}}" for info, width in zip(listener_info, column_widths))
+            print(listener_line)
         
         print(cRESET)
 

@@ -41,19 +41,30 @@ def isValidAgent(name, s):
             return False
 
 def viewAgents():
-
-    if checkAgentsEmpty(1) == False:
-
+    if not checkAgentsEmpty(1):
         success("Active Agents:")
         
         print(GREEN)
-        print(" Name                         Listener                         External IP                         Hostname")
-        print("------                       ----------                       -------------                       ----------")
+        headers = ["Name", "Listener", "External IP", "Hostname"]
+        column_widths = [30, 35, 40, 30]
+        separator_widths = [10, 15, 20, 10]
         
-        count = 1;
-        for i in agents:
-            print("{}.".format(count) + " {}".format(agents[i].name) + " " * (29 - len(agents[i].name)) + "{}".format(agents[i].listener) + " " * (33 - len(agents[i].listener)) + agents[i].remoteip + " " * (36 - len(agents[i].remoteip)) + agents[i].hostname)
-            count += 1;
+        header_line = " ".join(f"{header:^{width}}" for header, width in zip(headers, column_widths))
+        print(header_line)
+        
+        separator = " ".join(f"{'-' * sep_width:^{width}}" for sep_width, width in zip(separator_widths, column_widths))
+        print(separator)
+        
+        for count, agent_id in enumerate(agents, 1):
+            agent = agents[agent_id]
+            agent_info = [
+                f"{count}. {agent.name}",
+                agent.listener,
+                agent.remoteip,
+                agent.hostname
+            ]
+            agent_line = " ".join(f"{info:^{width}}" for info, width in zip(agent_info, column_widths))
+            print(agent_line)
         
         print(cRESET)
 
@@ -165,8 +176,8 @@ def uagents():
     
     try:        
         data = readFromDatabase(agentsDB)
-        temp = data[0]
-        for agent_key,value in temp.items():
-            agents[agent_key] = value
+        for agent_dict in data:
+            for agent_key,value in agent_dict.items():
+                agents[agent_key] = value
     except:
         pass
