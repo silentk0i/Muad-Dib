@@ -10,6 +10,8 @@ from core.agentshelpers import *
 import os
 import glob
 
+firstRun = True;
+
 class AutoComplete(object):
     
     def __init__(self, options, complete_paths=False):
@@ -206,7 +208,31 @@ def agentsHelper():
 def home():
 
     Hmenu.clearScreen()
+    
+    global firstRun
+    banner = """
+    __  ___                __            ____  _ __  
+   /  |/  /_  ______ _____/ /           / __ \\(_) /_ 
+  / /|_/ / / / / __ `/ __  /  ______   / / / / / __ \\
+ / /  / / /_/ / /_/ / /_/ /  /_____/  / /_/ / / /_/ /
+/_/  /_/\\__,_/\\__,_/\\__,_/           /_____/ /_.___/ 
 
+            created by silentk0i               
+         https://github.com/silentk0i         
+
+       _  _       
+      (.)(.)      
+     /   () \\     
+    / |     | \\   
+   `'|_   _|'`'   
+      | (_) |     
+       '---'
+"""
+    if(firstRun == True):
+        print(YELLOW + banner + cRESET)
+        firstRun = False
+    
+    
     while True:
         
         try:
