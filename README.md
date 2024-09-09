@@ -41,7 +41,7 @@ pip install -r requirements.txt
 (home)> 
 ```
 
-Code generation is still a work-in-progress, so you must compile the Atreides agent using the solution provided in ```~/payloads/Atreides/```. When you chose a listener change the ip & port variables with the values provided from the server and compile. They should be easy to find as I put a ```//REPLACE THIS``` comment in Atreides.cpp.
+Code generation is still a work-in-progress, so you must compile the Atreides agent using the solution provided in ```~/payloads/Atreides/```. When you choose a listener change the ip & port variables with the values provided from the server and compile. They should be easy to find as I put a ```//REPLACE THIS``` comment in Atreides.cpp.
 ## Features
 
 #### Server
