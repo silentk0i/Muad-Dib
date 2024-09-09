@@ -60,7 +60,7 @@ The Atreides agent currently yields 8/73 detections as of 09/09/2024. However, m
 
 ![VirusTotal Detections](https://github.com/silentk0i/Muad-Dib/blob/main/assets/detections.png)
 
-The Atreides agent was also tested against an Elastic EDR environment with Elastic Defender enableded and yieled no alerts.
+The Atreides agent was also tested against an Elastic EDR environment with Elastic Defender enabled and yieled no alerts.
 
 
 ## Additional Notes
