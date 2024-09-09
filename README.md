@@ -41,7 +41,7 @@ pip install -r requirements.txt
 (home)> 
 ```
 
-Code generation is still a work-in-progress, so you must compile the Atreides agent using the solution provided in in ```~/payloads/Atreides/```. When you chose a listener change the ip & port variables with the values provided from the server and compile. They should be easy to find as I put a ```//REPLACE THIS``` comment in Atreides.cpp.
+Code generation is still a work-in-progress, so you must compile the Atreides agent using the solution provided in ```~/payloads/Atreides/```. When you chose a listener change the ip & port variables with the values provided from the server and compile. They should be easy to find as I put a ```//REPLACE THIS``` comment in Atreides.cpp.
 ## Features
 
 #### Server
@@ -72,10 +72,17 @@ The Atreides agent was also tested against an Elastic EDR environment with Elast
 
  - Please please please check out [0xRick's Blog](https://0xrick.github.io/) as a lot of the core design of this C2 stems from his blog on C2's.
  - Thanks to rad9800 for providing an incredibly detailed write up and code for [Tampering Syscalls](https://github.com/rad9800/TamperingSyscalls)
- - Finally, give thanks to Urien for the write up on different techniques for threadpool injection. You can find the write up [here](https://diagolima.com/html/posts/threadpools.html) and the code [here](https://github.com/Uri3n/Thread-Pool-Injection-PoC)
+ - Finally, give thanks to Uri3n for the write up on different techniques for threadpool injection. You can find the write up [here](https://diagolima.com/html/posts/threadpools.html) and the code [here](https://github.com/Uri3n/Thread-Pool-Injection-PoC)
 
 
 ## License
 
 This code is licensed under the [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) license.
 
+## TODO
+
+- [ ] Diferent payload formats
+- [ ] Domain-Fronting Support
+- [ ] More execution options (BOF loading, Reflective DLL injection)
+- [ ] Sleep obfuscation
+- [ ] Call Stack Spoofing
