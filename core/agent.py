@@ -28,7 +28,7 @@ class Agent:
         try:
             self.menu = Menu(self.name)
             self.menu.registerCommand("enumproc", "Enumerate all running processes", "")
-            self.menu.registerCommand("loadshell", "Remote ShellCode Injection via HWBP", "<target process> <location of .bin>")
+            self.menu.registerCommand("loadshell", "Remote ShellCode Injection via threadpools", "<target process> <location of .bin>")
             self.menu.registerCommand("sleep", "Change agent's sleep time.", "<time (s)>")
             self.menu.registerCommand("clear", "Clear tasks.", "")
             self.menu.registerCommand("quit", "Task agent to quit.", "")

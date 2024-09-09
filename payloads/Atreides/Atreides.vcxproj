@@ -126,6 +126,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,13 +137,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="defs.h" />
-    <ClInclude Include="functionPtrs.h" />
-    <ClInclude Include="injection.h" />
-    <ClInclude Include="Main.h" />
-    <ClInclude Include="Process.h" />
-    <ClInclude Include="structures.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="include\defs.h" />
+    <ClInclude Include="include\functionPtrs.h" />
+    <ClInclude Include="include\injection.h" />
+    <ClInclude Include="include\Main.h" />
+    <ClInclude Include="include\Process.h" />
+    <ClInclude Include="include\structures.h" />
+    <ClInclude Include="include\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Atreides.cpp" />

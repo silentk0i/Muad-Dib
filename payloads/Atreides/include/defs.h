@@ -1,9 +1,5 @@
 #pragma once
 
-#define WIN32_ERR(API) std::cout << "{!!} " << #API << " failed with error: " << GetLastError() << std::endl;
-#define NTAPI_ERR(API, status) std::cout << "{!!} " << #API << " failed with status: " << std::hex << status << std::endl;
-
-
 // Worker Factory
 #define WORKER_FACTORY_RELEASE_WORKER 0x0001
 #define WORKER_FACTORY_WAIT 0x0002

@@ -9,10 +9,10 @@
 #include <functional>
 #include <unordered_map>
 
-#include "defs.h"
-#include "injection.h"
-#include "Utils.h"
-#include "Process.h"
+#include "include/defs.h"
+#include "include/injection.h"
+#include "include/Utils.h"
+#include "include/Process.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 /*                                          Structs                                     */
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -33,22 +33,6 @@ typedef struct {
 	uintptr_t			R9;		// Fourth
 	uintptr_t			stk[STK_ARGS];	// Stack args
 } FUNC_ARGS;
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/*                                          Macros                                      */
-////////////////////////////////////////////////////////////////////////////////////////// 
-#define PRINT_ARGS( State, ExceptionInfo )                              \
-printf("%s %d arguments and stack for 0x%p || TID : 0x%x\n",            \
-    State, (STK_ARGS + 4), (PVOID)address, GetCurrentThreadId());       \
-printf("1:\t0x%p\n", (PVOID)(ExceptionInfo)->ContextRecord->Rcx);       \
-printf("2:\t0x%p\n", (PVOID)(ExceptionInfo)->ContextRecord->Rdx);       \
-printf("3:\t0x%p\n", (PVOID)(ExceptionInfo)->ContextRecord->R8);        \
-printf("4:\t0x%p\n", (PVOID)(ExceptionInfo)->ContextRecord->R9);        \
-for (UINT idx = 0; idx < STK_ARGS; idx++){                              \
-    const size_t offset = idx * 0x8 + 0x28;                             \
-    printf("%d:\t0x%p\n", (idx + 5), (PVOID)*(PULONG64)                 \
-        ((ExceptionInfo)->ContextRecord->Rsp + offset));                \
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /*                                          Globals                                     */
@@ -96,8 +80,6 @@ uintptr_t FindRopAddress(const uintptr_t function, const BYTE* stub, const UINT 
 	return NULL;
 }
 
-DWORD WINAPI TestThread(LPVOID lpParameter);
-
 //////////////////////////////////////////////////////////////////////////////////////////
 /*                                        Classes                                       */
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -135,8 +117,6 @@ public:
 LONG WINAPI ExceptionHandler(const PEXCEPTION_POINTERS ExceptionInfo)
 {
 	const auto address = ExceptionInfo->ContextRecord->Rip;
-	printf("Exception: 0x%llx\n", address);
-	printf("Exception Code: %d\n", ExceptionInfo->ExceptionRecord->ExceptionCode);
 	if (ExceptionInfo->ExceptionRecord->ExceptionCode == STATUS_SINGLE_STEP)
 	{
 		for (const auto& pair : ADDRESS_MAP)
@@ -163,8 +143,6 @@ LONG WINAPI ExceptionHandler(const PEXCEPTION_POINTERS ExceptionInfo)
 						*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + offset);
 				}
 
-				PRINT_ARGS("HIDING", ExceptionInfo);
-
 				ExceptionInfo->ContextRecord->Rcx = 0;
 				ExceptionInfo->ContextRecord->Rdx = 0;
 				ExceptionInfo->ContextRecord->R8 = 0;
@@ -175,8 +153,6 @@ LONG WINAPI ExceptionHandler(const PEXCEPTION_POINTERS ExceptionInfo)
 					const size_t offset = idx * 0x8 + 0x28;
 					*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + offset) = 0ull;
 				}
-
-				PRINT_ARGS("HIDDEN", ExceptionInfo);
 
 				ExceptionInfo->ContextRecord->EFlags |= (1 << 16); // Resume Flag
 				return EXCEPTION_CONTINUE_EXECUTION;
@@ -203,8 +179,6 @@ LONG WINAPI ExceptionHandler(const PEXCEPTION_POINTERS ExceptionInfo)
 					*(PULONG64)(ExceptionInfo->ContextRecord->Rsp + offset) =
 						SYSCALL_MAP[key].stk[idx];
 				}
-
-				PRINT_ARGS("RESTORED", ExceptionInfo);
 
 				SYSCALL_MAP.erase(key);
 

@@ -9,7 +9,7 @@
 #include <winhttp.h>
 #include <stdio.h>
 #include <Psapi.h>
-#include "Main.h"
+#include "include/Main.h"
 
 #pragma comment(lib, "winhttp.lib")
 
@@ -206,7 +206,6 @@ std::vector<uint8_t> base64_decode(const std::string& input) {
 
         size_t pos = base64_chars.find(c);
         if (pos == std::string::npos) {
-            std::cerr << "Invalid base64 character encountered: " << c << std::endl;
             return output;
         }
 
@@ -256,7 +255,6 @@ std::vector<ProcessResults> GetAllProcesses() {
 
     // Enumerate processes
     if (!K32EnumProcesses((PDWORD)PidArray, sizeof(PidArray), (LPDWORD)&bytesReturned)) {
-        std::wcerr << L"Failed to enumerate processes." << std::endl;
         return processList;
     }
 

