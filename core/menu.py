@@ -76,11 +76,11 @@ class Menu:
         success("Avaliable commands: ")
         
         print(GREEN)
-        print(" Command                         Description                         Arguments")
-        print("---------                       -------------                       -----------")
+        print(" Command                         Description                                                 Arguments")
+        print("---------                       -------------                                               -----------")
 
         for i in self.commands:
-            print(" {}".format(i) + " " * (32 - len(i)) + "{}".format(self.commands[i][0]) + " " * (36 - len(self.commands[i][0])) + "{}".format(self.commands[i][1]))
+            print(" {}".format(i) + " " * (32 - len(i)) + "{}".format(self.commands[i][0]) + " " * (60 - len(self.commands[i][0])) + "{}".format(self.commands[i][1]))
         
         print(cRESET)
     
@@ -208,7 +208,7 @@ def agentsHelper():
 def home():
 
     Hmenu.clearScreen()
-    
+
     global firstRun
     banner = """
     __  ___                __            ____  _ __  

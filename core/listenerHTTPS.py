@@ -22,7 +22,6 @@ class ListenerHTTPS:
         self.port       = port
         self.ipaddress  = ipaddress
         self.Path       = "data/listeners/{}/".format(self.name)
-        self.filePath   = "{}files/".format(self.Path)
         self.agentsPath = "{}agents/".format(self.Path)
         self.isRunning  = False
         self.app        = flask.Flask(__name__)
@@ -32,9 +31,6 @@ class ListenerHTTPS:
 
         if os.path.exists(self.agentsPath) == False:
             os.mkdir(self.agentsPath)
-
-        if os.path.exists(self.filePath) == False:
-            os.mkdir(self.filePath)
 
         @self.app.route("/reg", methods=['POST'])
         def registerAgent():
@@ -67,14 +63,6 @@ class ListenerHTTPS:
             result = flask.request.form.get("result")
             displayResults(name, result)
             return ('',204)
-
-        @self.app.route("/download/<name>", methods=['GET'])
-        def sendFile(name):
-            f    = open("{}{}".format(self.filePath, name), "rt")
-            data = f.read()
-            
-            f.close()
-            return (data, 200)
 
     def run(self):
         self.app.logger.disabled = True
