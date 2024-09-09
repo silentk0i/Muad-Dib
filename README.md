@@ -15,6 +15,7 @@ Install all requirements:
 
 ```bash
 cd Muad-Dib/
+sudo apt-get install openssl
 pip install -r requirements.txt
 ```
 
