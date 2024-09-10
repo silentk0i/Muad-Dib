@@ -30,16 +30,17 @@ pip install -r requirements.txt
 [+] Avaliable commands: 
 
 
- Command                         Description                         Arguments
----------                       -------------                       -----------
- help                            Show help.                          
- home                            Return home.                        
- exit                            Exit.                               
- listeners                       Manage listeners.                   
- agents                          Manage active agents.               
+ Command                         Description                                                 Arguments
+---------                       -------------                                               -----------
+ help                            Show help.                                                  
+ home                            Return home.                                                
+ exit                            Exit.                                                       
+ listeners                       Manage listeners.                                           
+ agents                          Manage active agents.                                       
+ payloads                        Generate payloads.                                          
 
 
-(home)> 
+(home)>  
 ```
 
 ## Features
