@@ -1,8 +1,8 @@
 #pragma once
-#include <Windows.h>
+#include <windows.h>
 #include <iostream>
 #include <string>
-#include <Psapi.h>
+#include <psapi.h>
 #include "functionPtrs.h"
 #include "defs.h"
 

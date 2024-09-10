@@ -6,6 +6,7 @@ from core.common import *
 
 from core.listenershelpers import *
 from core.agentshelpers import *
+from core.payloadshelpers import *
 
 import os
 import glob
@@ -147,6 +148,19 @@ def evAgents(command, args):
     elif command == "interact":
         interactWithAgent(args)
 
+def evPayloads(command, args):
+
+    if command == "help":
+        Pmenu.showHelp()
+    elif command == "home":
+        home()
+    elif command == "exit":
+        Exit()
+    elif command == "list":
+        viewPayloads()
+    elif command == "generate":
+        generatePayload(args)
+
 def evHome(command, args):
 
     if command == "help":
@@ -157,6 +171,8 @@ def evHome(command, args):
         listenersHelper()
     elif command == "agents":
         agentsHelper()
+    elif command == "payloads":
+        payloadsHelper()
     elif command == "exit":
         Exit()
 
@@ -205,6 +221,22 @@ def agentsHelper():
         else:
             evAgents(command, args)
 
+def payloadsHelper():
+
+    Pmenu.clearScreen()
+
+    while True:
+
+        try:
+            command, args = Pmenu.parse()
+        except:
+            continue
+
+        if command not in PayloadsCommands:
+            error("Invalid command.")
+        else:
+            evPayloads(command, args)
+
 def home():
 
     Hmenu.clearScreen()
@@ -251,6 +283,7 @@ def Exit():
 
 Amenu = Menu("agents")
 Lmenu = Menu("listeners")
+Pmenu = Menu("payloads")
 Hmenu = Menu("home")
 
 Amenu.registerCommand("list", "List active agents.", "")
@@ -263,13 +296,19 @@ Lmenu.registerCommand("start", "Start a listener.", "<name> <port> <interface> |
 Lmenu.registerCommand("stop", "Stop an active listener.","<name>")
 Lmenu.registerCommand("remove", "Remove a listener.", "<name>")
 
+Pmenu.registerCommand("list", "List available payload types.", "")
+Pmenu.registerCommand("generate", "Generate a payload", "<type> <listener> <output name>")
+
 Hmenu.registerCommand("listeners", "Manage listeners.", "")
 Hmenu.registerCommand("agents", "Manage active agents.", "")
+Hmenu.registerCommand("payloads", "Generate payloads.", "")
 
 Amenu.uCommands()
 Lmenu.uCommands()
+Pmenu.uCommands()
 Hmenu.uCommands()
 
 AgentsCommands    = Amenu.Commands
 ListenersCommands = Lmenu.Commands
+PayloadsCommands  = Pmenu.Commands
 homeCommands      = Hmenu.Commands
