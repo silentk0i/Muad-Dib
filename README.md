@@ -62,7 +62,7 @@ The Atreides agent currently yields 8/73 detections as of 09/09/2024. However, m
 
 ![VirusTotal Detections](https://github.com/silentk0i/Muad-Dib/blob/main/assets/detections.png)
 
-The Atreides agent was also tested against an Elastic EDR environment with Elastic Defender enabled and yielded no alerts. Fair warning this was tested with a Visual Studio compiled version. I noticed that the agent compiled with mingw yielded more detections 10/73, so if you would like to compile using Visual Studio I have provided the soltuion file.
+The Atreides agent was also tested against an Elastic EDR environment with Elastic Defender enabled and yielded no alerts. Fair warning this was tested with a Windows Visual Studio compiled version. I noticed that the agent compiled on Linux with mingw yielded more detections 10/73, so if you would like to compile using Visual Studio I have provided the soltuion file.
 
 
 ## Additional Notes
