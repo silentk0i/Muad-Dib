@@ -49,6 +49,7 @@ pip install -r requirements.txt
 - HTTPS communication
 - Multiple Agent accessibility
 - Persistent access to Agents/Listeners
+- Payload generation w/ mingw
 - Extremely minimal & lightweight
 
 #### Atreides Agent
