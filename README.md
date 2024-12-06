@@ -58,7 +58,7 @@ pip install -r requirements.txt
 - Enumeration of all running processes
 ## Detections
 
-The Atreides agent currently yields 8/73 detections as of 09/09/2024. However, most main stream AV platforms (Crowdstrike, Microsoft, Sophos) were evaded. All except for SentinelOne.
+The Atreides agent currently yields 8/73 detections as of 12/05/2024. However, most main stream AV platforms (Crowdstrike, Microsoft, Sophos) were evaded. All except for SentinelOne.
 
 ![VirusTotal Detections](https://github.com/silentk0i/Muad-Dib/blob/main/assets/detections.png)
 
